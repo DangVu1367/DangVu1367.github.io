@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang web báo tường</title>
+    <link rel="stylesheet" href="hi.css">
+    </head>
+<body>
+    <div class="container">
+        <h1>Thanh xuân cấp 3</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết..." onkeyup="searchPosts()">
+        </div>
+        <div id="gallery"></div>
+    </div>
+
+    <a href="https://www.instagram.com/zootopia.124/" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" class="instagram-icon">
+    </a>
+
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <button class="prev" onclick="prevImage()">&#10094;</button>
+        <div class="modal-content">
+            <div class="modal-images">
+                <img id="modalImage" src="">
+            </div>
+            <div class="modal-text">
+                <p id="modalText"></p>
+            </div>
+        </div>
+        <button class="next" onclick="nextImage()">&#10095;</button>
+    </div>
+
+    <script>
+        const posts = [
+            { images: ["file:///C:/Users/Admin/Desktop/4be102e08d7833266a693.jpg", "file:///C:/Users/Admin/Desktop/25cd36ccb954070a5e454.jpg","file:///C:/Users/Admin/Desktop/531f651eea8654d80d975.jpg","file:///C:/Users/Admin/Desktop/b733fc3273aacdf494bb1.jpg"], text: "Trại " },
+            { images: ["file:///C:/Users/Admin/Desktop/taixuong3.jpg", "file:///C:/Users/Admin/Desktop/taixuong4.jpg"], text: "Bài viết 2: Caption ảnh 2 thật đẹp!" },
+            { images: ["file:///C:/Users/Admin/Desktop/taixuong5.jpg"], text: "Bài viết 3: Hình ảnh từ chuyến đi gần đây" }
+        ];
+        let currentIndex = 0;
+        let currentImageIndex = 0;
+
+        function loadImages() {
+            const gallery = document.getElementById("gallery");
+            gallery.innerHTML = "";
+            posts.forEach((post, index) => {
+                const div = document.createElement("div");
+                div.classList.add("post");
+                div.innerHTML = `<img src="${post.images[0]}" onclick="openModal(${index})">`;
+                gallery.appendChild(div);
+            });
+        }
+
+        function openModal(index) {
+            currentIndex = index;
+            currentImageIndex = 0;
+            updateModal();
+            document.getElementById("imageModal").style.display = "flex";
+        }
+
+        function updateModal() {
+            document.getElementById("modalImage").src = posts[currentIndex].images[currentImageIndex];
+            document.getElementById("modalText").textContent = posts[currentIndex].text;
+        }
+
+        function nextImage() {
+            if (currentImageIndex < posts[currentIndex].images.length - 1) {
+                currentImageIndex++;
+                updateModal();
+            }
+        }
+
+        function prevImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateModal();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("imageModal").style.display = "none";
+        }
+
+        loadImages();
+    </script>
+</body>
+</html>
