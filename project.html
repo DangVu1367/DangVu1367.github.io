@@ -1,0 +1,349 @@
+<!<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang web báo tường</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+    <style>
+         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: url("https://i.imgur.com/KGoS1Mj.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            background:  rgb(189,183,107); 
+            padding: 70px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+    font-family: 'Pacifico', cursive;
+    font-size: 2.5em;
+    color: #4a2c2a;
+        }
+        .search-bar {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            justify-content: center;
+        }
+        .post {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+        .post img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .instagram-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            display: flex;
+            width: 70%;
+            max-width: 1000px;
+            color:black;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        .modal-images {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-images img {
+            width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+        }
+        .modal-text {
+            flex: 1;
+            text-align: left;
+            font-size: 16px;
+            color: #555;
+            margin-left: 20px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: black;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            max-height: 400px;
+            overflow-y: auto;
+            width: 100%;
+            flex-grow: 1;
+            white-space: pre-line;
+        }
+        .modal-media {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-media img,
+        .modal-media video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+        }
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .prev { left: 10px; }
+        .next { right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Thanh xuân cấp 3</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm bài viết..." onkeyup="searchPosts()">
+        </div>
+        <div id="gallery"></div>
+    </div>
+
+    <a href="https://www.instagram.com/our.4thmiracle_/" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" class="instagram-icon">
+    </a>
+
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <button class="prev" onclick="prevImage()">&#10094;</button>
+        <div class="modal-content">
+            <div class="modal-images">
+                <img id="modalImage" src="">
+            </div>
+            <div class="modal-text">
+                <p id="modalText"></p>
+            </div>
+        </div>
+        <button class="next" onclick="nextImage()">&#10095;</button>
+    </div>
+
+    <script>
+    const posts = [
+        { 
+            images: ["https://i.imgur.com/ZKLi5on.jpeg", "https://i.imgur.com/uPfjjBb.jpeg","https://i.imgur.com/P4JBcpz.jpeg","https://i.imgur.com/mlEJQqF.jpeg","https://i.imgur.com/sGvOgcZ.jpeg"], 
+            videos: [],
+             text: `TRẠI TRUYỀN THỐNG – HƠI ẤM CỦA TUỔI TRẺ
+
+Có những khoảnh khắc không cần quá hào nhoáng, chỉ đơn giản là được cùng nhau sống hết mình – và trại truyền thống chính là một trong số đó. Những ngày bên nhau, dựng từng chiếc lều, cùng nấu nướng, cùng cười đùa, tưởng chừng như bình thường nhưng lại trở thành kỷ niệm không thể phai.
+
+Đêm lửa trại, ánh lửa cháy sáng giữa màn đêm, soi rõ từng khuôn mặt thân quen. Có người hát vang đầy nhiệt huyết, có người lặng lẽ ngắm nhìn, có người bất chợt xúc động khi nhận ra mình may mắn vì được ở đây, cùng những con người này, trong giây phút này. Những câu chuyện được kể, những bí mật lần đầu được thổ lộ, những cái ôm vỗ về – tất cả tạo nên một thứ cảm xúc khó diễn tả thành lời.
+
+Chuyến đi kết thúc, ai cũng trở về với guồng quay của cuộc sống. Nhưng khi nhìn lại, chúng ta biết rằng, đâu đó trong lòng, vẫn luôn có một miền ký ức ấm áp, nơi lưu giữ những khoảnh khắc tươi đẹp nhất của tuổi trẻ.
+`,
+            keywords: "trại, tra, trai, trại truyền thống"
+        },
+        { 
+            images: ["https://i.imgur.com/6zG8JoB.jpeg", "https://i.imgur.com/x8FY8z5.jpeg","https://i.imgur.com/uM8PNwc.jpeg","https://i.imgur.com/BvBCSc4.jpeg","https://i.imgur.com/vamoHQ9.jpeg","https://i.imgur.com/xu92MWq.jpeg","https://i.imgur.com/V49qPK3.jpeg"], 
+            videos: [],  
+            text: `NGÀY NHÀ GIÁO VIỆT NAM – KÝ ỨC VÀ LÒNG BIẾT ƠN
+
+Có những người đi qua cuộc đời ta và để lại dấu ấn chẳng thể nào quên. Thầy cô – những người lái đò thầm lặng, đưa từng thế hệ học trò đến với bến bờ tri thức. 20/11 không chỉ là một ngày lễ, mà còn là dịp để mỗi người ngoái lại, nhớ về những bài học, những lời dạy và cả những tình cảm chưa từng nói thành lời.
+
+Ký ức về thầy cô là những trang vở đầy chữ đỏ, là những lần nhắc nhở nghiêm khắc nhưng chứa đầy yêu thương, là những ánh mắt hiền từ dõi theo từng bước chân ta khôn lớn. Rồi có một ngày, chúng ta rời xa mái trường, mang theo bao kỷ niệm, để rồi đến khi trưởng thành mới hiểu: Người thầy không chỉ dạy kiến thức mà còn dạy cách làm người.
+
+Ngày Nhà giáo Việt Nam, dù ở đâu, hãy dành một lời tri ân chân thành đến những người đã từng dạy dỗ ta. Một tin nhắn, một cuộc gọi, hay chỉ đơn giản là một lời cảm ơn – cũng đủ để sưởi ấm những tấm lòng đã dành cả thanh xuân cho sự nghiệp trồng người.
+
+`,
+            keywords: "Ngày nhà giáo Việt Nam, 20/11"
+        },
+        { 
+            images: ["https://i.imgur.com/aQIMfHj.jpeg"], 
+            videos: [],
+            text: `NGÀY QUỐC TẾ NAM GIỚI – GỬI ĐẾN NHỮNG NGƯỜI BẠN TUYỆT VỜI
+
+Ngày Quốc tế Nam giới (19/11) có thể không quá rầm rộ, nhưng lại là dịp để gửi lời tri ân đến những người bạn nam trong lớp – những người luôn là một phần không thể thiếu của tập thể. Họ có thể là những người sẵn sàng giúp đỡ khi ai đó gặp khó khăn, là chỗ dựa khi cần một bờ vai lắng nghe, hay đơn giản là những kẻ tạo ra những trận cười không dứt.
+
+Dù đôi khi có chút nghịch ngợm, có lúc vô tư đến mức đáng ghét, nhưng chẳng thể phủ nhận rằng lớp học sẽ bớt vui nếu thiếu đi sự có mặt của họ. Họ cũng có những áp lực riêng, những mệt mỏi không nói ra, nhưng vẫn luôn tỏ ra mạnh mẽ để làm điểm tựa cho bạn bè.
+
+Hôm nay, hãy dành một lời cảm ơn, một cái vỗ vai hay thậm chí một món quà nhỏ để cho họ biết rằng, họ cũng quan trọng và đáng được trân trọng như bất kỳ ai. Chúc những chàng trai của lớp luôn vui vẻ, mạnh mẽ và đạt được những điều mình mong muốn!`,
+            keywords: "Ngày quốc tế nam giới, 19/11"
+        },
+        { 
+            images: ["https://i.imgur.com/KULZmSf.jpeg"], 
+            videos: ["https://streamable.com/wuxndy"],
+            text: `SHINE – KHOẢNH KHẮC CỦA LỚP CHÚNG TA
+
+Shine vừa qua thực sự là một trải nghiệm khó quên với cả lớp mình! Từ những ngày tập luyện, cùng nhau sửa từng động tác, canh từng nhịp nhạc, cho đến giây phút bước lên sân khấu, tất cả đều là một hành trình đáng nhớ. Dù có lúc mệt mỏi, có những lần tranh luận vì muốn mọi thứ hoàn hảo nhất, nhưng cuối cùng, chúng ta đã cùng nhau làm nên một màn trình diễn đầy tự hào.
+
+Khoảnh khắc ánh đèn bật sáng, tim ai cũng đập nhanh, hồi hộp nhưng đầy háo hức. Tiếng cổ vũ vang lên, từng gương mặt rạng rỡ, từng bước nhảy, từng câu hát đều là sự nỗ lực mà cả lớp đã cùng nhau vun đắp. Đứng trên sân khấu, cảm giác đó thực sự tuyệt vời – như thể chúng ta không chỉ biểu diễn mà còn đang khẳng định chính mình.
+
+Dù Shine đã khép lại, nhưng những tiếng cười, những giây phút hồi hộp sau cánh gà, hay cái ôm thật chặt khi tiết mục kết thúc sẽ luôn là một phần ký ức đẹp của lớp mình. Cảm ơn tất cả vì đã cùng nhau tỏa sáng, và hy vọng rằng chúng ta sẽ còn nhiều cơ hội để viết tiếp những kỷ niệm tuyệt vời như thế này!`,
+            keywords: "Shine, Tỏa sáng tài năng"
+        },
+        { 
+            images: ["https://i.imgur.com/3FwnGRb.jpeg"], 
+            videos: [],
+            text: `NGÀY PHỤ NỮ VIỆT NAM – KHOẢNH KHẮC ĐÁNG NHỚ CỦA LỚP MÌNH
+
+Ngày Phụ nữ Việt Nam vừa qua thực sự là một kỷ niệm đáng nhớ với cả lớp! Từ những khâu chuẩn bị, trang trí lớp học, bí mật lên kế hoạch cho những món quà bất ngờ, đến giây phút mọi người cùng nhau cười đùa, tất cả đều tràn ngập niềm vui và sự ấm áp.
+
+Không khí ngày hôm đó thật đặc biệt! Những lời chúc ý nghĩa, những tiết mục văn nghệ ngẫu hứng, và cả những khoảnh khắc lặng lẽ khi nhìn thấy nụ cười hạnh phúc của các bạn nữ – tất cả tạo nên một ngày thật sự đáng nhớ. Có những bạn nam vụng về với bó hoa, có người đỏ mặt khi đọc lời chúc, nhưng chính sự chân thành đã làm cho ngày này trở nên ý nghĩa hơn bao giờ hết.
+
+Dù chỉ diễn ra trong một ngày, nhưng những cảm xúc và kỷ niệm sẽ còn đọng lại rất lâu. Cảm ơn tất cả đã cùng nhau tạo nên một ngày 20/10 thật đặc biệt. Mong rằng chúng ta sẽ luôn trân trọng và dành những điều tốt đẹp nhất cho nhau, không chỉ trong ngày này mà cả những ngày bình thường khác!`,
+            keywords: "Ngày phụ nữ Việt Nam, 20/10"
+        },
+    ];
+
+    let currentIndex = 0;
+    let currentImageIndex = 0;
+
+    function loadImages() {
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+        posts.forEach((post, index) => {
+            if (post.images.length > 0) {
+                const div = document.createElement("div");
+                div.classList.add("post");
+                div.innerHTML = `<img src="${post.images[0]}" onclick="openModal(${index})">`;
+                gallery.appendChild(div);
+            }
+        });
+    }
+
+    function openModal(index) {
+        currentIndex = index;
+        currentImageIndex = 0;
+        updateModal();
+        document.getElementById("imageModal").style.display = "flex";
+    }
+
+   function updateModal() {
+    let modalContent = "";
+
+    if (posts[currentIndex].videos && posts[currentIndex].videos.length > 0) {
+        let videoUrl = posts[currentIndex].videos[0];
+
+        if (videoUrl.includes("streamable.com")) {
+            let videoId = videoUrl.split("/").pop();
+            videoUrl = `https://streamable.com/e/${videoId}`;
+        }
+
+        modalContent = `
+            <div style="position: relative; width: 100%; height: 300px;">
+                <iframe src="${videoUrl}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+            </div>
+        `;
+    } else {
+        modalContent = `<img id="modalImage" src="${posts[currentIndex].images[currentImageIndex]}">`;
+    }
+
+    document.querySelector(".modal-images").innerHTML = modalContent;
+    document.getElementById("modalText").textContent = posts[currentIndex].text;
+}
+
+
+
+    function nextImage() {
+        if (currentImageIndex < posts[currentIndex].images.length - 1) {
+            currentImageIndex++;
+            updateModal();
+        }
+    }
+
+    function prevImage() {
+        if (currentImageIndex > 0) {
+            currentImageIndex--;
+            updateModal();
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+    
+    function searchPosts() {
+        let filter = document.getElementById("searchInput").value.toLowerCase();
+        const gallery = document.getElementById("gallery");
+        gallery.innerHTML = "";
+
+        if (filter === "") {
+            loadImages(); 
+            return;
+        }
+
+        let filteredPosts = posts.filter(post => post.keywords.toLowerCase().includes(filter));
+
+        if (filteredPosts.length === 0) {
+            gallery.innerHTML = "<p>Không tìm thấy kết quả.</p>";
+            return;
+        }
+
+        filteredPosts.forEach((post) => {
+            const index = posts.findIndex(p => p === post);
+            const div = document.createElement("div");
+            div.classList.add("post");
+            div.innerHTML = `<img src="${post.images[0]}" onclick="openModal(${index})">`;
+            gallery.appendChild(div);
+        });
+    }
+
+    loadImages();
+</script>
+
+
+</body>
+</html>
